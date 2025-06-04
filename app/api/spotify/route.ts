@@ -1,7 +1,7 @@
 // app/api/spotify/route.ts
 
 import { NextResponse } from 'next/server';
-import { getTrendingSongs } from '../../../utils/spotify/spotify';
+import { getTrendingSongs } from '../../lib/spotifyApi';
 
 export async function GET() {
   try {

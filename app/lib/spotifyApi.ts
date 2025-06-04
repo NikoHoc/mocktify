@@ -20,7 +20,7 @@ export async function getAccessToken() {
 export async function getTrendingSongs() {
   const token = await getAccessToken();
 
-  const res = await fetch("https://api.spotify.com/v1/browse/new-releases?limit=10", {
+  const res = await fetch("https://api.spotify.com/v1/browse/new-releases?limit=50", {
     headers: {
       Authorization: `Bearer ${token}`,
     },
