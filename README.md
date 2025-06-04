@@ -11,7 +11,9 @@ npm install
 
 cp .env.example .env.local
 ```
-In Supabase go to project overview to find your Supabase URL and API key, or click Connect then open tab App Frameworks to see your keys, then paste it into your .env.local
+In Supabase go to project overview to find your NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY, or click Connect then open tab App Frameworks to see your keys, then paste it into your .env.local
+
+For spotify, go to [Spotify for Developer](https://developer.spotify.com/dashboard/), create app -> set 'Redirect URIs' to "https://oauth.pstmn.io/v1/browser-callback". Then copy and paste SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET to your .env.local
 ### Run The Project
 ```bash
 npm run dev
