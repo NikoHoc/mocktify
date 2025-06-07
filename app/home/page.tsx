@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import SongList from "@/components/SongList";
 import AddPlaylistModal from "@/components/AddPlaylistModal";
+import NowPlaying from "@/components/NowPlaying";
 import { supabase } from "../lib/supabaseClient";
 
 interface Playlist {
@@ -96,18 +97,18 @@ export default function Home() {
 	return (
 		<>
 			<div
-				className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
+				className="w-full h-12 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4 mx-auto max-w-4xl"
 				style={{ backgroundImage: "url('/headphone.jpg')" }}
 			>
-				<h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
-				<p className="text-lg italic font-normal text-[#ECF0F1]">
+				<h1 className="text-base font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
+				<p className="text-xs italic font-normal text-[#ECF0F1]">
 					Keep up with your favorite songs through Mocktify
 				</p>
 			</div>
-			<div className="flex mt-6 px-10">
-				{/* Sidebar */}
+			<div className="flex mt-6 h-[calc(100vh-4rem)]">
+				{/* Playlist Sidebar */}
 				{isUserLoggedIn && (
-					<div className="w-72 mr-6 bg-white rounded-lg p-4 shadow-lg h-[calc(100vh-8rem)] overflow-y-auto border border-gray-300">
+					<div className="w-1/6 bg-white rounded-lg p-4 shadow-lg h-full border border-gray-300">
 						<div className="flex items-center justify-between mb-4">
 							<h2 className="text-2xl font-bold text-gray-800">Your Playlists</h2>
 							<button
@@ -149,15 +150,21 @@ export default function Home() {
 						)}
 					</div>
 				)}
-						{/* Main content */}
-						<div className="flex-1">
-							<div className="flex items-center justify-between">
-								<h1 className="text-3xl font-bold ">New Release Song</h1>
-							</div>
-							<div className="mt-4 mb-5">
-								<SongList />
-							</div>
-						</div>
+				{/* Main content */}
+				<div className="flex-1 mx-4 overflow-y-auto h-full">
+					<div className="flex items-center justify-center">
+						<h1 className="text-2xl font-bold">New Release Song</h1>
+					</div>
+					<div className="mt-4 mb-5">
+						<SongList />
+					</div>
+				</div>
+				{/* Now Playing Sidebar */}
+				{isUserLoggedIn && (
+					<div className="w-1/5 h-full">
+						<NowPlaying />
+					</div>
+				)}
 			</div>
 			<AddPlaylistModal
 				isOpen={isModalOpen}
