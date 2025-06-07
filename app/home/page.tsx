@@ -5,6 +5,8 @@ import SongList from "@/components/SongList";
 import AddPlaylistModal from "@/components/AddPlaylistModal";
 import NowPlaying from "@/components/NowPlaying";
 import { supabase } from "../lib/supabaseClient";
+import Link from "next/link";
+import TestPlaying from '@/components/TestPlaying'
 
 interface Playlist {
   id: string;
@@ -153,10 +155,14 @@ export default function Home() {
 				{/* Main content */}
 				<div className="flex-1 mx-4 overflow-y-auto h-full">
 					<div className="flex items-center justify-center">
-						<h1 className="text-2xl font-bold">New Release Song</h1>
+						<h1 className="text-2xl font-bold">New Release Song <Link className="text-sm italic font-thin hover:text-blue-500" href="/sign-in">*sign in to create playlist</Link></h1>
 					</div>
 					<div className="mt-4 mb-5">
 						<SongList />
+					</div>
+
+					<div>
+						<TestPlaying/>
 					</div>
 				</div>
 				{/* Now Playing Sidebar */}

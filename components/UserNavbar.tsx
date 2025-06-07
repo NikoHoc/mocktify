@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../app/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
+import { signInWithSpotify, signOut } from "../app/lib/auth";
 
 export function UserNavbar() {
   const router = useRouter();
@@ -43,14 +44,15 @@ export function UserNavbar() {
     getUser();
   }, []);
 
-  const handleLogin = () => {
-    router.push("/sign-in");
-  };
+  // const handleLogin = () => {
+  //   router.push("/sign-in");
+  // };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-  };
+  // const handleLogout = async () => {
+  //   // await supabase.auth.signOut();
+  //   const { error } = await supabase.auth.signOut()
+  //   router.push("/");
+  // };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,7 +114,7 @@ export function UserNavbar() {
                 {showDropdown && (
                   <div className="absolute left-0 top-full mt-2 w-[150px] rounded-md bg-[#3E5A6C] shadow-lg z-50">
                     <button
-                      onClick={handleLogout}
+                      onClick={() => signOut(router)}
                       className="block w-full px-4 py-2 text-sm text-[#F5EFEB] hover:bg-[#4C6B80] text-left"
                     >
                       Sign out
@@ -122,7 +124,7 @@ export function UserNavbar() {
               </div>
             ) : (
               <button
-                onClick={handleLogin}
+                onClick={signInWithSpotify}
                 className="w-[150px] rounded-md bg-[#F5EFEB] px-4 py-2 text-sm font-semibold text-[#567C8D] hover:brightness-110"
               >
                 Sign In

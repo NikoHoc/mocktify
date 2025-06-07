@@ -16,7 +16,8 @@
     "next": "15.3.3",
     "postcss": "^8.5.4",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-spotify-web-playback": "^0.14.7"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
