@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.8",
+    "fast-average-color": "^9.5.0",
     "flowbite-react": "^0.11.7",
     "next": "15.3.3",
     "postcss": "^8.5.4",
