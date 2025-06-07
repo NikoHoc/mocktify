@@ -1,26 +1,34 @@
 "use client";
 
-import { Button, Navbar, NavbarBrand, NavbarCollapse, NavbarLink, NavbarToggle, Dropdown, DropdownItem } from "flowbite-react";
+import {
+  Navbar,
+  NavbarBrand,
+  NavbarCollapse,
+  NavbarLink,
+  NavbarToggle,
+} from "flowbite-react";
 import { useEffect, useState } from "react";
-import { supabase } from '../app/lib/supabaseClient';
+import { supabase } from "../app/lib/supabaseClient";
 import { useRouter } from "next/navigation";
-import { User } from '@supabase/supabase-js';
-
+import { User } from "@supabase/supabase-js";
 
 export function UserNavbar() {
-
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (session?.user) {
         setUser(session.user);
       }
 
-      // Optional: Listen for login/logout events
       const { data: listener } = supabase.auth.onAuthStateChange(
         async (_event, session) => {
           setUser(session?.user ?? null);
@@ -41,53 +49,88 @@ export function UserNavbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push("/")
-  }
+    router.push("/");
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <Navbar className="px-5 py-5" fluid>
-      <NavbarBrand href="/">
-        <span className="px-2 self-center whitespace-nowrap text-4xl font-bold text-white">
-          Mocktify
-        </span>
-      </NavbarBrand>
-      <NavbarToggle />
-      <NavbarCollapse>
-        <NavbarLink href="/" className="font-semibold text-xl">
-          Home
-        </NavbarLink>
-        {/* Munculkan fitur untuk user yang logged in */}
-        {user && (
-          <NavbarLink href="/playlist" className="font-semibold text-xl">
-            Playlist
-          </NavbarLink>
-        )}
+    <Navbar
+      fluid
+      className={`p-4 fixed top-0 z-50 w-full transition-all duration-300 ${
+        scrolled
+          ? "bg-[#567C8D]/80 backdrop-blur-md shadow-md"
+          : "bg-[#567C8D]"
+      }`}
+    >
+      <div className="w-full flex flex-wrap items-center justify-between px-8">
+        <NavbarBrand href="/">
+          <span className="self-center whitespace-nowrap text-2xl font-bold text-[#F5EFEB]">
+            Mocktify
+          </span>
+        </NavbarBrand>
 
-        {/* pengecekan untuk button sign in atau sign out */}
-        {user ? (
-          <Dropdown
-            label={user.email || "User"}
-            dismissOnClick={false}
-            size="sm"
-            
-          >
-            <DropdownItem
-              className="!bg-red-600 font-extrabold rounded-lg"
-              onClick={handleLogout}
+        <NavbarToggle
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+          className="bg-[#F5EFEB]"
+        />
+
+        <NavbarCollapse className={`${isMenuOpen ? "block" : "hidden"} w-full md:flex md:items-center md:w-auto`}>
+          <div className="flex flex-col md:flex-row md:items-center gap-4 md:gap-x-8 mt-4 md:mt-0">
+            <NavbarLink
+              href="/"
+              className="font-semibold text-lg text-[#F5EFEB] hover:!text-[#F5EFEB]"
             >
-              Sign out
-            </DropdownItem>
-          </Dropdown>
-        ) : (
-          <Button
-            size="sm"
-            onClick={handleLogin}
-            className="bg-blue-600 hover:bg-blue-700 text-white"
-          >
-            Sign In
-          </Button>
-        )}
-      </NavbarCollapse>
+              Home
+            </NavbarLink>
+
+            {user && (
+              <NavbarLink
+                href="/playlist"
+                className="font-semibold text-lg text-[#F5EFEB] hover:!text-[#F5EFEB]"
+              >
+                Playlist
+              </NavbarLink>
+            )}
+
+            {user ? (
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="w-[150px] rounded-md bg-[#F5EFEB] px-4 py-2 text-sm font-semibold text-[#567C8D] hover:brightness-110"
+                >
+                  {user.email?.split("@")[0] || "User"}
+                </button>
+
+                {showDropdown && (
+                  <div className="absolute left-0 top-full mt-2 w-[150px] rounded-md bg-[#3E5A6C] shadow-lg z-50">
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full px-4 py-2 text-sm text-[#F5EFEB] hover:bg-[#4C6B80] text-left"
+                    >
+                      Sign out
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="w-[150px] rounded-md bg-[#F5EFEB] px-4 py-2 text-sm font-semibold text-[#567C8D] hover:brightness-110"
+              >
+                Sign In
+              </button>
+            )}
+          </div>
+        </NavbarCollapse>
+      </div>
     </Navbar>
   );
 }
