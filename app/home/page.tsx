@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import SongList from "@/components/SongList";
 import AddPlaylistModal from "@/components/AddPlaylistModal";
@@ -6,6 +8,8 @@ import { supabase } from "../lib/supabaseClient";
 interface Playlist {
   id: string;
   name: string;
+  description?: string | null;
+  image?: string | null;
   created_at: string;
 }
 
@@ -39,7 +43,7 @@ export default function Home() {
 			}
 			const { data, error } = await supabase
 				.from("playlist")
-				.select("id, name, created_at")
+				.select("id, name, description, image, created_at")
 				.eq("user_id", userId)
 				.order("created_at", { ascending: false });
 			if (error) {
@@ -51,9 +55,42 @@ export default function Home() {
 		fetchPlaylists();
 	}, [userId]);
 
-	const handleCreatePlaylist = (playlist: { name: string; user_id: string }) => {
-		// For now, just log the playlist data. Replace with actual creation logic.
-		console.log("Creating playlist:", playlist);
+	const handleCreatePlaylist = async (playlist: { name: string; description?: string; imageFile?: File; user_id: string }) => {
+		try {
+			const formData = new FormData();
+			formData.append('name', playlist.name);
+			if (playlist.description) {
+				formData.append('description', playlist.description);
+			}
+			formData.append('user_id', playlist.user_id);
+			if (playlist.imageFile) {
+				formData.append('image', playlist.imageFile);
+			}
+
+			const response = await fetch('/api/playlists', {
+				method: 'POST',
+				body: formData,
+			});
+
+			if (!response.ok) {
+				let errorMessage = 'Unknown error';
+				try {
+					const errorData = await response.json();
+					errorMessage = errorData.error || JSON.stringify(errorData);
+				} catch {
+					// ignore JSON parse errors
+				}
+				console.error('Error creating playlist:', errorMessage);
+				return;
+			}
+
+			const data = await response.json();
+			if (data.playlist) {
+				setPlaylists((prev) => [data.playlist, ...prev]);
+			}
+		} catch (error) {
+			console.error('Error creating playlist:', error);
+		}
 	};
 
 	return (
@@ -70,41 +107,57 @@ export default function Home() {
 			<div className="flex mt-6 px-10">
 				{/* Sidebar */}
 				{isUserLoggedIn && (
-					<div className="w-64 mr-6 bg-gray-100 rounded p-4 shadow-md h-[calc(100vh-8rem)] overflow-y-auto">
-						<h2 className="text-xl font-semibold mb-4">Your Playlists</h2>
+					<div className="w-72 mr-6 bg-white rounded-lg p-4 shadow-lg h-[calc(100vh-8rem)] overflow-y-auto border border-gray-300">
+						<div className="flex items-center justify-between mb-4">
+							<h2 className="text-2xl font-bold text-gray-800">Your Playlists</h2>
+							<button
+								onClick={() => setIsModalOpen(true)}
+								className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
+							>
+								Add
+							</button>
+						</div>
 						{playlists.length === 0 ? (
 							<p className="text-gray-600">No playlists found.</p>
 						) : (
-							<ul>
+							<ul className="space-y-3">
 								{playlists.map((playlist) => (
 									<li
 										key={playlist.id}
-										className="mb-2 cursor-pointer hover:text-blue-600"
+										className="cursor-pointer hover:bg-blue-100 rounded p-2 flex items-center space-x-4 transition"
 									>
-										{playlist.name}
+										{playlist.image ? (
+											<img
+												src={playlist.image}
+												alt={playlist.name}
+												className="w-12 h-12 rounded-lg object-cover border border-gray-300"
+											/>
+										) : (
+											<div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
+												🎵
+											</div>
+										)}
+										<div>
+											<div className="font-semibold text-gray-900">{playlist.name}</div>
+											{playlist.description && (
+												<div className="text-sm text-gray-500">{playlist.description}</div>
+											)}
+										</div>
 									</li>
 								))}
 							</ul>
 						)}
 					</div>
 				)}
-				{/* Main content */}
-				<div className="flex-1">
-					<div className="flex items-center justify-between">
-						<h1 className="text-3xl font-bold ">New Release Song</h1>
-						{isUserLoggedIn && (
-							<button
-								onClick={() => setIsModalOpen(true)}
-								className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-							>
-								Add Playlist
-							</button>
-						)}
-					</div>
-					<div className="mt-4 mb-5">
-						<SongList />
-					</div>
-				</div>
+						{/* Main content */}
+						<div className="flex-1">
+							<div className="flex items-center justify-between">
+								<h1 className="text-3xl font-bold ">New Release Song</h1>
+							</div>
+							<div className="mt-4 mb-5">
+								<SongList />
+							</div>
+						</div>
 			</div>
 			<AddPlaylistModal
 				isOpen={isModalOpen}
