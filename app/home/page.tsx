@@ -24,6 +24,7 @@ export default function Home() {
   const [playlists, setPlaylists] = useState<Playlist[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const getSession = async () => {
@@ -209,7 +210,14 @@ export default function Home() {
             </h1>
           </div>
           <div className="mt-4 mb-5">
-            <SongList onAddToPlaylist={openAddToPlaylistModal} />
+            <input
+              type="text"
+              placeholder="Search songs by title..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full p-2 border border-gray-300 rounded mb-4"
+            />
+            <SongList onAddToPlaylist={openAddToPlaylistModal} searchQuery={searchQuery} />
           </div>
 
           <div>

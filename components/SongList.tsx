@@ -1,11 +1,12 @@
-import { Card } from "flowbite-react";
+import { Card, Button } from "flowbite-react";
 import { useEffect, useState } from "react";
 
 interface SongListProps {
   onAddToPlaylist: (songId: string) => void;
+  searchQuery?: string;
 }
 
-const SongList = ({ onAddToPlaylist }: SongListProps) => {
+const SongList = ({ onAddToPlaylist, searchQuery }: SongListProps) => {
   const [songs, setSongs] = useState<any[]>([]);
 
   useEffect(() => {
@@ -20,9 +21,15 @@ const SongList = ({ onAddToPlaylist }: SongListProps) => {
     fetchSongs();
   }, []);
 
+  const filteredSongs = searchQuery
+    ? songs.filter((song) =>
+        song.name.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : songs;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-10 justify-items-center">
-      {songs.map(
+      {filteredSongs.map(
         (song) => (
           console.log(song.id),
           (
@@ -34,9 +41,9 @@ const SongList = ({ onAddToPlaylist }: SongListProps) => {
               <p className="font-normal text-gray-700 dark:text-gray-400">
                 {song.artists.map((artist: any) => artist.name).join(", ")}
               </p>
-              <button className="mt-4" onClick={() => onAddToPlaylist(song.id)} color="blue">
+              <Button className="mt-4" onClick={() => onAddToPlaylist(song.id)} color="blue">
                 Add to Playlist
-              </button>
+              </Button>
             </Card>
           )
         )
