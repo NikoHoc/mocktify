@@ -1,19 +1,86 @@
 "use client";
 
+import { supabase } from "@/app/lib/supabaseClient";
 import { useEffect, useState } from "react";
 
-const PlaylistTable = () => {
+interface PlaylistTableProps {
+  playlistId?: string;
+}
+
+const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
   const [songs, setSongs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchSongs = async () => {
-      const res = await fetch("/api/spotify");
-      const data = await res.json();
-      setSongs(data.songs);
-    };
+      setLoading(true);
+      // If playlistId is provided, fetch songs for this specific playlist
+      if (playlistId) {
+        try {
+          // Fetch songs from the specific playlist
+          const { data, error } = await supabase
+            .from("song")
+            .select("song_id")
+            .eq("playlist_id", playlistId);
 
+          if (error) throw error;
+
+          if (data && data.length > 0) {
+            const fetchSongs = async () => {
+              const res = await fetch("/api/spotify");
+              const data_spotify = await res.json();
+
+              const real_data = data_spotify.songs.filter((song: any) =>
+                data.some((d: any) => d.song_id === song.id)
+              );
+              setSongs(real_data);
+            };
+
+            fetchSongs();
+          } else {
+            // If no songs in playlist, show empty state
+            setSongs([]);
+          }
+        } catch (err) {
+          console.error("Error fetching playlist songs:", err);
+          setSongs([]);
+        }
+      }
+      setLoading(false);
+    };
     fetchSongs();
-  }, []);
+  }, [playlistId]);
+
+  const handleDelete = async (songId: string) => {
+    if (!playlistId) return;
+
+    try {
+      const { error } = await supabase
+        .from("song")
+        .delete()
+        .match({ playlist_id: playlistId, song_id: songId });
+
+      if (error) throw error;
+
+      // Update UI setelah berhasil delete
+      setSongs((prevSongs) => prevSongs.filter((song) => song.id !== songId));
+    } catch (err) {
+      console.error("Error deleting song from playlist:", err);
+    }
+  };
+
+  if (loading) {
+    return <div className="text-center py-10">Loading songs...</div>;
+  }
+
+  if (songs.length === 0) {
+    return (
+      <div className="text-center py-10">
+        <p className="text-xl text-gray-500">No songs in this playlist yet.</p>
+        <p className="mt-2 text-gray-400">Search for songs and add them to your playlist!</p>
+      </div>
+    );
+  }
 
   return (
     <div className="overflow-x-auto">
@@ -70,13 +137,16 @@ const PlaylistTable = () => {
               <td className="py-3 px-4">{song.album?.name || song.name}</td>
               <td className="py-3 px-4 text-right">Aug 4, 2024</td>
               <td className="py-3 px-4 text-right">
-                <button className="text-gray-600 hover:text-red-500 transition-colors">
+                <button
+                  onClick={() => handleDelete(song.id)}
+                  className="text-gray-600 hover:text-red-500 transition-colors"
+                >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     height="24px"
                     viewBox="0 -960 960 960"
                     width="24px"
-                    fill="currentColor" 
+                    fill="currentColor"
                   >
                     <path d="M280-120q-33 0-56.5-23.5T200-200v-520q-17 0-28.5-11.5T160-760q0-17 11.5-28.5T200-800h160q0-17 11.5-28.5T400-840h160q17 0 28.5 11.5T600-800h160q17 0 28.5 11.5T800-760q0 17-11.5 28.5T760-720v520q0 33-23.5 56.5T680-120H280Zm400-600H280v520h400v-520ZM400-280q17 0 28.5-11.5T440-320v-280q0-17-11.5-28.5T400-640q-17 0-28.5 11.5T360-600v280q0 17 11.5 28.5T400-280Zm160 0q17 0 28.5-11.5T600-320v-280q0-17-11.5-28.5T560-640q-17 0-28.5 11.5T520-600v280q0 17 11.5 28.5T560-280ZM280-720v520-520Z" />
                   </svg>

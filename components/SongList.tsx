@@ -23,7 +23,7 @@ const SongList = ({ onAddToPlaylist }: SongListProps) => {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-10 justify-items-center">
       {songs.map(
-        (song, index) => (
+        (song) => (
           console.log(song.id),
           (
             <Card key={song.id} className="max-w-sm">
@@ -34,11 +34,7 @@ const SongList = ({ onAddToPlaylist }: SongListProps) => {
               <p className="font-normal text-gray-700 dark:text-gray-400">
                 {song.artists.map((artist: any) => artist.name).join(", ")}
               </p>
-              <button
-                className="mt-4"
-                onClick={() => onAddToPlaylist((index + 1).toString())}
-                color="blue"
-              >
+              <button className="mt-4" onClick={() => onAddToPlaylist(song.id)} color="blue">
                 Add to Playlist
               </button>
             </Card>
