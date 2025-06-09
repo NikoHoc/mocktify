@@ -167,33 +167,33 @@ export default function Home() {
             ) : (
               <ul className="space-y-3">
                 {playlists.map((playlist) => (
-                  <li
-                    key={playlist.id}
-                    className="cursor-pointer hover:bg-blue-100 rounded p-2 flex items-center space-x-4 transition"
+                <li
+                  key={playlist.id}
+                  className="hover:bg-blue-100 rounded p-2 transition"
+                >
+                  <Link
+                    href={`/playlist/${playlist.id}`}
+                    className="flex items-center space-x-4 w-full cursor-pointer"
                   >
-                    <Link
-                      href={`/playlist/${playlist.id}`}
-                      className="flex items-center space-x-4 w-full"
-                    >
-                      {playlist.image ? (
-                        <img
-                          src={playlist.image}
-                          alt={playlist.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-gray-300"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
-                          🎵
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-semibold text-gray-900">{playlist.name}</div>
-                        {playlist.description && (
-                          <div className="text-sm text-gray-500">{playlist.description}</div>
-                        )}
+                    {playlist.image ? (
+                      <img
+                        src={playlist.image}
+                        alt={playlist.name}
+                        className="w-12 h-12 rounded-lg object-cover border border-gray-300"
+                      />
+                    ) : (
+                      <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
+                        🎵
                       </div>
-                    </Link>
-                  </li>
+                    )}
+                    <div>
+                      <div className="font-semibold text-gray-900">{playlist.name}</div>
+                      {playlist.description && (
+                        <div className="text-sm text-gray-500">{playlist.description}</div>
+                      )}
+                    </div>
+                  </Link>
+                </li>
                 ))}
               </ul>
             )}
