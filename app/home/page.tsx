@@ -140,21 +140,35 @@ export default function Home() {
 
   return (
     <>
-      <div
-        className="w-full h-12 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4 mx-auto max-w-4xl"
-        style={{ backgroundImage: "url('/headphone.jpg')" }}
-      >
-        <h1 className="text-base font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
-        <p className="text-xs italic font-normal text-[#ECF0F1]">
-          Keep up with your favorite songs through Mocktify
-        </p>
+      <div className="w-full h-80 relative mb-6 overflow-hidden">
+        <div
+          style={{
+            backgroundImage: "url('/headphone.jpg')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            width: "100%",
+            height: "100%",
+          }}
+          className="absolute inset-0"
+        ></div>
+        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
+        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center text-center px-4">
+          <h1 className="text-2xl sm:text-3xl font-bold italic text-white drop-shadow-lg">
+            MOCKTIFY
+          </h1>
+          <p className="text-sm sm:text-base italic font-normal text-white mt-2 drop-shadow-md">
+            Keep up with your favorite songs through Mocktify
+          </p>
+        </div>
       </div>
       <div className="flex mt-6 h-[calc(100vh-4rem)]">
         {/* Playlist Sidebar */}
         {isUserLoggedIn && (
           <div className="w-1/6 bg-white rounded-lg p-4 shadow-lg h-full border border-gray-300">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">Your Playlists</h2>
+              <h2 className="text-2xl font-bold text-gray-800">
+                Your Playlists
+              </h2>
               <button
                 onClick={() => setIsModalOpen(true)}
                 className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
@@ -167,33 +181,37 @@ export default function Home() {
             ) : (
               <ul className="space-y-3">
                 {playlists.map((playlist) => (
-                <li
-                  key={playlist.id}
-                  className="hover:bg-blue-100 rounded p-2 transition"
-                >
-                  <Link
-                    href={`/playlist/${playlist.id}`}
-                    className="flex items-center space-x-4 w-full cursor-pointer"
+                  <li
+                    key={playlist.id}
+                    className="hover:bg-blue-100 rounded p-2 transition"
                   >
-                    {playlist.image ? (
-                      <img
-                        src={playlist.image}
-                        alt={playlist.name}
-                        className="w-12 h-12 rounded-lg object-cover border border-gray-300"
-                      />
-                    ) : (
-                      <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
-                        🎵
-                      </div>
-                    )}
-                    <div>
-                      <div className="font-semibold text-gray-900">{playlist.name}</div>
-                      {playlist.description && (
-                        <div className="text-sm text-gray-500">{playlist.description}</div>
+                    <Link
+                      href={`/playlist/${playlist.id}`}
+                      className="flex items-center space-x-4 w-full cursor-pointer"
+                    >
+                      {playlist.image ? (
+                        <img
+                          src={playlist.image}
+                          alt={playlist.name}
+                          className="w-12 h-12 rounded-lg object-cover border border-gray-300"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
+                          🎵
+                        </div>
                       )}
-                    </div>
-                  </Link>
-                </li>
+                      <div>
+                        <div className="font-semibold text-gray-900">
+                          {playlist.name}
+                        </div>
+                        {playlist.description && (
+                          <div className="text-sm text-gray-500">
+                            {playlist.description}
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                  </li>
                 ))}
               </ul>
             )}
@@ -204,7 +222,10 @@ export default function Home() {
           <div className="flex items-center justify-center">
             <h1 className="text-2xl font-bold">
               New Release Song{" "}
-              <Link className="text-sm italic font-thin hover:text-blue-500" href="/sign-in">
+              <Link
+                className="text-sm italic font-thin hover:text-blue-500"
+                href="/sign-in"
+              >
                 *sign in to create playlist
               </Link>
             </h1>
@@ -217,7 +238,10 @@ export default function Home() {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full p-2 border border-gray-300 rounded mb-4"
             />
-            <SongList onAddToPlaylist={openAddToPlaylistModal} searchQuery={searchQuery} />
+            <SongList
+              onAddToPlaylist={openAddToPlaylistModal}
+              searchQuery={searchQuery}
+            />
           </div>
 
           <div>
