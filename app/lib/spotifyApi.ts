@@ -1,3 +1,4 @@
+// token untuk fitur user guest
 export async function getAccessToken() {
   const clientId = process.env.SPOTIFY_CLIENT_ID!;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET!;

@@ -12,8 +12,11 @@ import { supabase } from "../app/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import { User } from "@supabase/supabase-js";
 import { signInWithSpotify, signOut } from "../app/lib/auth";
+import getSpotifyProfile from "../app/lib/spotifyProfile";
+
 
 export function UserNavbar() {
+  const { spotifyProfile, loading } = getSpotifyProfile();
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -44,16 +47,6 @@ export function UserNavbar() {
     getUser();
   }, []);
 
-  // const handleLogin = () => {
-  //   router.push("/sign-in");
-  // };
-
-  // const handleLogout = async () => {
-  //   // await supabase.auth.signOut();
-  //   const { error } = await supabase.auth.signOut()
-  //   router.push("/");
-  // };
-
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 10);
@@ -62,6 +55,10 @@ export function UserNavbar() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  if (user) {
+    if (loading) return <div>Loading Profile...</div>;
+  }
 
   return (
     <Navbar
@@ -92,23 +89,13 @@ export function UserNavbar() {
             >
               Home
             </NavbarLink>
-
-            {user && (
-              <NavbarLink
-                href="/playlist"
-                className="font-semibold text-lg text-[#F5EFEB] hover:!text-[#F5EFEB]"
-              >
-                Playlist
-              </NavbarLink>
-            )}
-
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="w-[150px] rounded-md bg-[#F5EFEB] px-4 py-2 text-sm font-semibold text-[#567C8D] hover:brightness-110"
                 >
-                  {user.email?.split("@")[0] || "User"}
+                  {spotifyProfile.display_name}
                 </button>
 
                 {showDropdown && (
