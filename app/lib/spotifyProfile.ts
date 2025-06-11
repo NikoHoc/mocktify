@@ -1,23 +1,18 @@
 import { useEffect, useState } from "react";
-import { supabase } from "./supabaseClient";
+import useSpotifySession from "./spotifySession"; // ganti dari supabase langsung ke custom hook
 
 export default function useSpotifyProfile() {
+  const { accessToken, isLoading: loadingToken } = useSpotifySession();
   const [spotifyProfile, setSpotifyProfile] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loadingProfile, setLoadingProfile] = useState(true);
 
   useEffect(() => {
+    if (!accessToken) {
+      setLoadingProfile(false);
+      return;
+    }
+
     const fetchSpotifyProfile = async () => {
-      setLoading(true);
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      const accessToken = session?.provider_token;
-      if (!accessToken) {
-        setLoading(false);
-        return;
-      }
-
       try {
         const res = await fetch("https://api.spotify.com/v1/me", {
           headers: {
@@ -30,11 +25,11 @@ export default function useSpotifyProfile() {
       } catch (error) {
         console.error("Failed to fetch Spotify profile:", error);
       }
-      setLoading(false);
+      setLoadingProfile(false);
     };
 
     fetchSpotifyProfile();
-  }, []);
+  }, [accessToken]);
 
-  return { spotifyProfile, loading };
+  return { spotifyProfile, loading: loadingToken || loadingProfile };
 }

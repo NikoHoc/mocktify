@@ -65,8 +65,9 @@ export default function Home() {
     fetchPlaylists();
   }, [userId]);
 
-  if (isUserLoggedIn) {
-    if (loading) return <div>Loading Profile...</div>;
+  console.log(spotifyProfile)
+  if (isUserLoggedIn && (loading || !spotifyProfile)) {
+    return <div>Loading your profile...</div>;
   }
   
   const handleCreatePlaylist = async (playlist: {
@@ -154,7 +155,7 @@ export default function Home() {
             <img src={spotifyProfile.images?.[0]?.url} alt="Profile" className="rounded-full w-40 h-40 m-5"/>
           </div>
           <div>
-            <h1 className="text-white text-4xl italic">Welcome, {spotifyProfile.display_name}!</h1>
+            <h1 className="text-white text-4xl italic">Welcome, {spotifyProfile?.display_name ?? "Spotify User"}!</h1>
           </div>
         </div>
       ) : (

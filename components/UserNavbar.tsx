@@ -95,7 +95,7 @@ export function UserNavbar() {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="w-[150px] rounded-md bg-[#F5EFEB] px-4 py-2 text-sm font-semibold text-[#567C8D] hover:brightness-110"
                 >
-                  {spotifyProfile.display_name}
+                  {spotifyProfile?.display_name ?? "Spotify User"}
                 </button>
 
                 {showDropdown && (

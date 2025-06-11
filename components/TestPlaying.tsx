@@ -1,16 +1,18 @@
 import React from "react";
 import SpotifyPlayer from 'react-spotify-web-playback';
-import useSpotifyToken from '../app/lib/spotifyToken';
+import getSpotifySession from '../app/lib/spotifySession';
 import { Spinner } from "flowbite-react";
 
 const NowPlaying: React.FC = () => {
-  const token = useSpotifyToken();
+  const { accessToken, isLoading } = getSpotifySession();
 
-  if (!token) return <Spinner color="success" aria-label="Success spinner example" />;
+  if (isLoading || !accessToken) {
+    return <Spinner color="success" aria-label="Loading..." />;
+  }
 
   return (
         <SpotifyPlayer
-          token={token}
+          token={accessToken}
           uris={['spotify:album:7oms6zH06xEyReTsPsuzWi']}
           play={false}
         />
