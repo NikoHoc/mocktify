@@ -26,7 +26,10 @@ export default function useSpotifySession() {
         if (!isMounted) return;
 
         if (event === "TOKEN_REFRESHED" || event === "SIGNED_IN") {
-          setAccessToken(session?.provider_token ?? null);
+            const {
+                data: { session: updatedSession },
+            } = await supabase.auth.getSession();
+            setAccessToken(updatedSession?.provider_token ?? null);
         }
 
         if (event === "SIGNED_OUT") {
