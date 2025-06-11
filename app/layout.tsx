@@ -24,18 +24,18 @@ export default function RootLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return (
-        <html lang="en">
-            <body
-                style={{ backgroundColor: "#ECF0F1" }}
-                className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
-            >
-                <UserNavbar />
-                <main className="flex-grow my-8">
-                    {children}
-                </main>
-                <UserFooter />
-            </body>
-        </html>
-    );
+	return (
+		<html lang="en">
+			<body
+				style={{ backgroundColor: "#ECF0F1" }}
+				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+			>
+				<UserNavbar />
+				<div className="pt-16">
+					{children}
+				</div>
+				<UserFooter />
+			</body>
+		</html>
+	);
 }

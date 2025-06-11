@@ -8,6 +8,8 @@ import { supabase } from "../lib/supabaseClient";
 import Link from "next/link";
 import TestPlaying from "@/components/TestPlaying";
 import AddToPlaylistModal from "@/components/AddToPlaylistModal";
+import { signInWithSpotify } from "../lib/auth";
+import getSpotifyProfile from "../lib/spotifyProfile";
 
 interface Playlist {
   id: string;
@@ -18,6 +20,7 @@ interface Playlist {
 }
 
 export default function Home() {
+  const { spotifyProfile, loading } = getSpotifyProfile();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
@@ -62,6 +65,10 @@ export default function Home() {
     fetchPlaylists();
   }, [userId]);
 
+  if (isUserLoggedIn) {
+    if (loading) return <div>Loading Profile...</div>;
+  }
+  
   const handleCreatePlaylist = async (playlist: {
     name: string;
     description?: string;
@@ -140,28 +147,27 @@ export default function Home() {
 
   return (
     <>
-      <div className="w-full h-80 relative mb-6 overflow-hidden">
-        <div
-          style={{
-            backgroundImage: "url('/headphone.jpg')",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            width: "100%",
-            height: "100%",
-          }}
-          className="absolute inset-0"
-        ></div>
-        <div className="absolute inset-0 bg-black opacity-50 z-10"></div>
-        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center text-center px-4">
-          <h1 className="text-2xl sm:text-3xl font-bold italic text-white drop-shadow-lg">
-            MOCKTIFY
-          </h1>
-          <p className="text-sm sm:text-base italic font-normal text-white mt-2 drop-shadow-md">
+      {isUserLoggedIn ? (
+        <div className="w-full h-80 flex flex-row justify-center items-center"
+        style={{ backgroundImage: "url('/bg-profile.jpg')" }}>
+          <div>
+            <img src={spotifyProfile.images?.[0]?.url} alt="Profile" className="rounded-full w-40 h-40 m-5"/>
+          </div>
+          <div>
+            <h1 className="text-white text-4xl italic">Welcome, {spotifyProfile.display_name}!</h1>
+          </div>
+        </div>
+      ) : (
+        <div className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
+          style={{ backgroundImage: "url('/headphone.jpg')" }}>
+          <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
+          <p className="text-lg italic font-normal text-[#ECF0F1]">
             Keep up with your favorite songs through Mocktify
           </p>
         </div>
-      </div>
-      <div className="flex mt-6 h-[calc(100vh-4rem)]">
+      )}
+      
+      <div className="flex mt-6 h-[calc(100vh-4rem)] m-2">
         {/* Playlist Sidebar */}
         {isUserLoggedIn && (
           <div className="w-1/6 bg-white rounded-lg p-4 shadow-lg h-full border border-gray-300">
@@ -220,15 +226,12 @@ export default function Home() {
         {/* Main content */}
         <div className="flex-1 mx-4 overflow-y-auto h-full">
           <div className="flex items-center justify-center">
-            <h1 className="text-2xl font-bold">
-              New Release Song{" "}
-              <Link
-                className="text-sm italic font-thin hover:text-blue-500"
-                href="/sign-in"
-              >
+            <h1 className="text-2xl font-bold">New Release Song</h1>
+            {!isUserLoggedIn && (
+              <p className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2" onClick={signInWithSpotify}>
                 *sign in to create playlist
-              </Link>
-            </h1>
+              </p>
+            )}
           </div>
           <div className="mt-4 mb-5">
             <input
@@ -243,18 +246,19 @@ export default function Home() {
               searchQuery={searchQuery}
             />
           </div>
-
-          <div>
-            <TestPlaying />
-          </div>
         </div>
         {/* Now Playing Sidebar */}
         {isUserLoggedIn && (
-          <div className="w-1/5 h-full">
-            <NowPlaying />
-          </div>
+          <NowPlaying />
         )}
       </div>
+
+      {isUserLoggedIn && (
+        <div className="">
+          <TestPlaying />
+        </div>
+      )}
+
       <AddPlaylistModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

@@ -11,7 +11,7 @@ const NowPlaying: React.FC = () => {
   return (
         <SpotifyPlayer
           token={token}
-          uris={['spotify:track:4uLU6hMCjMI75M1A2tKUQC']}
+          uris={['spotify:album:7oms6zH06xEyReTsPsuzWi']}
           autoPlay
         />
     );

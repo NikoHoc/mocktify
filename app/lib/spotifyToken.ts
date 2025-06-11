@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from './supabaseClient';
 
+// token untuk fitur user log in spotify
 export default function useSpotifyToken() {
   const [token, setToken] = useState<string | null>(null);
 
