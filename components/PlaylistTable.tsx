@@ -10,42 +10,60 @@ interface PlaylistTableProps {
 const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
   const [songs, setSongs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
 
   useEffect(() => {
     const fetchSongs = async () => {
       setLoading(true);
       // If playlistId is provided, fetch songs for this specific playlist
-      if (playlistId) {
-        try {
-          // Fetch songs from the specific playlist
-          const { data, error } = await supabase
-            .from("song")
-            .select("song_id")
-            .eq("playlist_id", playlistId);
+          if (playlistId) {
+            try {
+              // Fetch songs from the specific playlist
+              const { data, error } = await supabase
+                .from("song")
+                .select("song_id, created_at")
+                .eq("playlist_id", playlistId);
 
-          if (error) throw error;
+              if (error) throw error;
 
-          if (data && data.length > 0) {
-            const fetchSongs = async () => {
-              const res = await fetch("/api/spotify");
-              const data_spotify = await res.json();
+              if (data && data.length > 0) {
+                const fetchSongs = async () => {
+                  const res = await fetch("/api/spotify");
+                  const data_spotify = await res.json();
 
-              const real_data = data_spotify.songs.filter((song: any) =>
-                data.some((d: any) => d.song_id === song.id)
-              );
-              setSongs(real_data);
-            };
+                  // Map the created_at date from supabase data to the corresponding song
+                  let real_data = data_spotify.songs
+                    .filter((song: any) =>
+                      data.some((d: any) => d.song_id === song.id)
+                    )
+                    .map((song: any) => {
+                      const songData = data.find((d: any) => d.song_id === song.id);
+                      return {
+                        ...song,
+                        date_added: songData?.created_at,
+                      };
+                    });
+                  // Remove duplicates by song id
+                  const uniqueSongsMap = new Map();
+                  real_data.forEach((song: any) => {
+                    if (!uniqueSongsMap.has(song.id)) {
+                      uniqueSongsMap.set(song.id, song);
+                    }
+                  });
+                  real_data = Array.from(uniqueSongsMap.values());
+                  setSongs(real_data);
+                };
 
-            fetchSongs();
-          } else {
-            // If no songs in playlist, show empty state
-            setSongs([]);
+                fetchSongs();
+              } else {
+                // If no songs in playlist, show empty state
+                setSongs([]);
+              }
+            } catch (err) {
+              console.error("Error fetching playlist songs:", err);
+              setSongs([]);
+            }
           }
-        } catch (err) {
-          console.error("Error fetching playlist songs:", err);
-          setSongs([]);
-        }
-      }
       setLoading(false);
     };
     fetchSongs();
@@ -82,6 +100,13 @@ const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
     );
   }
 
+  const sortedSongs = [...songs].sort((a, b) => {
+    if (!a.date_added || !b.date_added) return 0;
+    const dateA = new Date(a.date_added).getTime();
+    const dateB = new Date(b.date_added).getTime();
+    return sortOrder === "asc" ? dateA - dateB : dateB - dateA;
+  });
+
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left">
@@ -90,10 +115,16 @@ const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
             <th className="py-3 px-4 w-16">#</th>
             <th className="py-3 px-4">Title</th>
             <th className="py-3 px-4">Album</th>
-            <th className="py-3 px-4 text-right">
+            <th
+              className="py-3 px-4 text-right cursor-pointer select-none"
+              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+              title="Sort by Date added"
+            >
               Date added
               <svg
-                className="inline-block ml-1 w-4 h-4"
+                className={`inline-block ml-1 w-4 h-4 transition-transform ${
+                  sortOrder === "asc" ? "rotate-180" : ""
+                }`}
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -111,7 +142,7 @@ const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
           </tr>
         </thead>
         <tbody>
-          {songs.map((song, index) => (
+          {sortedSongs.map((song, index) => (
             <tr
               key={song.id}
               className="hover:bg-gray-100 dark:hover:bg-gray-300 border-b border-gray-100 dark:border-gray-800"
@@ -135,7 +166,15 @@ const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
                 </div>
               </td>
               <td className="py-3 px-4">{song.album?.name || song.name}</td>
-              <td className="py-3 px-4 text-right">Aug 4, 2024</td>
+              <td className="py-3 px-4 text-right">
+                {song.date_added
+                  ? new Date(song.date_added).toLocaleDateString(undefined, {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })
+                  : ""}
+              </td>
               <td className="py-3 px-4 text-right">
                 <button
                   onClick={() => handleDelete(song.id)}
