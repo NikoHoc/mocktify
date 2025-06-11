@@ -24,5 +24,8 @@ export async function signOut(router: ReturnType<typeof useRouter>) {
     console.error("Spotify logout failed:", error.message);
     throw error;
   }
+  
   router.push("/");
+
+  window.location.reload();
 }

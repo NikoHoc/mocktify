@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import PlaylistTable from "@/components/PlaylistTable";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabaseClient";
 import { Spinner } from "flowbite-react";
 
@@ -17,6 +17,7 @@ interface Playlist {
 
 export default function Playlist() {
   const params = useParams();
+  const router = useRouter();
   const playlistId = params.id as string;
 
   const [playlist, setPlaylist] = useState<Playlist | null>(null);
@@ -25,7 +26,8 @@ export default function Playlist() {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("from-purple-800 to-gray-900");
+  const [backgroundColor, setBackgroundColor] = useState("from-[#567C8D] to-gray-900");
+  const [showMenu, setShowMenu] = useState(false);
 
   // Fetch playlist data from supabase
   useEffect(() => {
@@ -83,6 +85,43 @@ export default function Playlist() {
       setIsEditing(false);
     } catch (err) {
       console.error("Error updating playlist:", err);
+    }
+  };
+
+  // Handle delete playlist
+    const handleDeletePlaylist = async () => {
+    if (!playlist) return;
+    
+    if (!confirm("Are you sure you want to delete this playlist? This action cannot be undone.")) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      
+      // First delete all songs in this playlist
+      const { error: songDeleteError } = await supabase
+        .from("song")
+        .delete()
+        .eq("playlist_id", playlistId);
+        
+      if (songDeleteError) throw songDeleteError;
+      
+      // Then delete the playlist
+      const { error: playlistDeleteError } = await supabase
+        .from("playlist")
+        .delete()
+        .eq("id", playlistId);
+        
+      if (playlistDeleteError) throw playlistDeleteError;
+      
+      // Redirect to home page instead of playlist page
+      router.push("/");
+      
+    } catch (err) {
+      console.error("Error deleting playlist:", err);
+      alert("Failed to delete playlist. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -188,9 +227,34 @@ export default function Playlist() {
             </label>
           </div>
 
-          {/* Playlist Information */}
+         {/* Playlist Information */}
           <div className="flex-grow">
-            <p className="text-sm uppercase font-semibold">PLAYLIST</p>
+            <div className="flex justify-between items-start">
+              <p className="text-sm uppercase font-semibold">PLAYLIST</p>
+              
+              {/* Three dots menu */}
+              <div className="relative">
+                <button 
+                  onClick={() => setShowMenu(!showMenu)}
+                  className="p-2 hover:text-gray-300 rounded-full"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
+                  </svg>
+                </button>
+                
+                {showMenu && (
+                  <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg z-10 border border-gray-700">
+                    <button 
+                      onClick={handleDeletePlaylist}
+                      className="w-full text-left block px-4 py-2 text-gray-200 hover:text-red-500"
+                    >
+                      Delete Playlist
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
 
             {isEditing ? (
               <div className="space-y-3 mt-2">
