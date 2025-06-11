@@ -249,12 +249,14 @@ export default function Home() {
         </div>
         {/* Now Playing Sidebar */}
         {isUserLoggedIn && (
-          <NowPlaying />
+           <div className="sticky top-20">
+            <NowPlaying />
+          </div>
         )}
       </div>
 
       {isUserLoggedIn && (
-        <div className="">
+       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg border-t border-gray-200 py-2 px-4 z-50">
           <TestPlaying />
         </div>
       )}

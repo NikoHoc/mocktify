@@ -12,7 +12,7 @@ const NowPlaying: React.FC = () => {
         <SpotifyPlayer
           token={token}
           uris={['spotify:album:7oms6zH06xEyReTsPsuzWi']}
-          autoPlay
+          play={false}
         />
     );
 };
