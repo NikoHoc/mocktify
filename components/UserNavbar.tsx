@@ -63,7 +63,7 @@ export function UserNavbar() {
   return (
     <Navbar
       fluid
-      className={`p-4 fixed top-0 z-50 w-full transition-all duration-300 ${
+      className={`px-4 py-3 fixed top-0 z-50 w-full transition-all duration-300 ${
         scrolled
           ? "bg-[#567C8D]/80 backdrop-blur-md shadow-md"
           : "bg-[#567C8D]"
@@ -102,7 +102,7 @@ export function UserNavbar() {
                   <div className="absolute left-0 top-full mt-2 w-[150px] rounded-md bg-[#3E5A6C] shadow-lg z-50">
                     <button
                       onClick={() => signOut(router)}
-                      className="block w-full px-4 py-2 text-sm text-[#F5EFEB] hover:bg-[#4C6B80] text-left"
+                      className="bg-gray-700 block rounded-md w-full px-4 py-2 text-sm text-[#F5EFEB] hover:text-[#FFFFFF] hover:font-bold  text-left"
                     >
                       Sign out
                     </button>

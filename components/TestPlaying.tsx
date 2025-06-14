@@ -1,9 +1,13 @@
 import React from "react";
-import SpotifyPlayer from 'react-spotify-web-playback';
-import getSpotifySession from '../app/lib/spotifySession';
+import SpotifyPlayer from "react-spotify-web-playback";
+import getSpotifySession from "../app/lib/spotifySession";
 import { Spinner } from "flowbite-react";
 
-const NowPlaying: React.FC = () => {
+interface TestPlayingProps {
+  setIsPlaying: (playing: boolean) => void;
+}
+
+const TestPlaying: React.FC<TestPlayingProps> = ({ setIsPlaying }) => {
   const { accessToken, isLoading } = getSpotifySession();
 
   if (isLoading || !accessToken) {
@@ -11,12 +15,18 @@ const NowPlaying: React.FC = () => {
   }
 
   return (
-        <SpotifyPlayer
-          token={accessToken}
-          uris={['spotify:album:7oms6zH06xEyReTsPsuzWi']}
-          play={false}
-        />
-    );
+    <SpotifyPlayer
+      token={accessToken}
+      uris={["spotify:album:7oms6zH06xEyReTsPsuzWi"]}
+      callback={(state) => {
+        setIsPlaying(state.isPlaying); // kirim status ke parent
+      }}
+      play={false}
+      styles={{
+        activeColor: "#1DB954",
+      }}
+    />
+  );
 };
 
-export default NowPlaying;
+export default TestPlaying;

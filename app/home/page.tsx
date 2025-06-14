@@ -10,6 +10,7 @@ import TestPlaying from "@/components/TestPlaying";
 import AddToPlaylistModal from "@/components/AddToPlaylistModal";
 import { signInWithSpotify } from "../lib/auth";
 import getSpotifyProfile from "../lib/spotifyProfile";
+import MainSlideShow from "@/components/MainSlideShow";
 
 interface Playlist {
   id: string;
@@ -28,6 +29,7 @@ export default function Home() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -67,7 +69,7 @@ export default function Home() {
 
   console.log(spotifyProfile)
   if (isUserLoggedIn && (loading || !spotifyProfile)) {
-    return <div>Loading your profile...</div>;
+    return <div className="mt-4">Loading your profile...</div>;
   }
   
   const handleCreatePlaylist = async (playlist: {
@@ -146,139 +148,130 @@ export default function Home() {
     setSelectedSongId(null);
   };
 
-  return (
-    <>
-      {isUserLoggedIn ? (
-        <div className="w-full h-80 flex flex-row justify-center items-center"
-        style={{ backgroundImage: "url('/bg-profile.jpg')" }}>
-          <div>
-            <img src={spotifyProfile.images?.[0]?.url} alt="Profile" className="rounded-full w-40 h-40 m-5"/>
-          </div>
-          <div>
-            <h1 className="text-white text-4xl italic">Welcome, {spotifyProfile?.display_name ?? "Spotify User"}!</h1>
-          </div>
-        </div>
-      ) : (
-        <div className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
-          style={{ backgroundImage: "url('/headphone.jpg')" }}>
-          <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
-          <p className="text-lg italic font-normal text-[#ECF0F1]">
-            Keep up with your favorite songs through Mocktify
-          </p>
-        </div>
-      )}
-      
-      <div className="flex mt-6 h-[calc(100vh-4rem)] m-2">
-        {/* Playlist Sidebar */}
-        {isUserLoggedIn && (
-          <div className="w-1/6 bg-white rounded-lg p-4 shadow-lg h-full border border-gray-300">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">
-                Your Playlists
-              </h2>
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700"
-              >
-                Add
-              </button>
+return (
+  <>
+    {isUserLoggedIn ? (
+      <div className="flex flex-col md:flex-row h-screen">
+        {/* KIRI */}
+        <div className="w-full md:w-2/3 lg:w-3/4 p-6 overflow-y-auto hide-scrollbar">
+          <MainSlideShow />
+          {isPlaying && (
+            <div className="block md:hidden my-4">
+              <NowPlaying isPlaying={isPlaying} />
             </div>
-            {playlists.length === 0 ? (
-              <p className="text-gray-600">No playlists found.</p>
-            ) : (
-              <ul className="space-y-3">
-                {playlists.map((playlist) => (
-                  <li
-                    key={playlist.id}
-                    className="hover:bg-blue-100 rounded p-2 transition"
+          )}
+
+          <div className="flex flex-col lg:flex-row gap-6 mt-8">
+            <div className="w-full lg:w-1/4">
+              <div className="bg-white rounded-lg shadow p-4 h-full border border-gray-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-2xl font-bold text-gray-800">Your Playlists</h2>
+                  <div
+                    onClick={() => setIsModalOpen(true)}
+                    className="flex items-center justify-center rounded-md bg-[#C8D9E6] hover:bg-[#567C8D] px-3 py-0.5 text-[#2F4156] hover:text-[#F5EFEB] cursor-pointer transition"
                   >
-                    <Link
-                      href={`/playlist/${playlist.id}`}
-                      className="flex items-center space-x-4 w-full cursor-pointer"
-                    >
-                      {playlist.image ? (
-                        <img
-                          src={playlist.image}
-                          alt={playlist.name}
-                          className="w-12 h-12 rounded-lg object-cover border border-gray-300"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
-                          🎵
-                        </div>
-                      )}
-                      <div>
-                        <div className="font-semibold text-gray-900">
-                          {playlist.name}
-                        </div>
-                        {playlist.description && (
-                          <div className="text-sm text-gray-500">
-                            {playlist.description}
+                    Add
+                  </div>
+                </div>
+                {playlists.length === 0 ? (
+                  <p className="text-gray-600">No playlists found.</p>
+                ) : (
+                  <ul className="space-y-3">
+                    {playlists.map((playlist) => (
+                      <li
+                        key={playlist.id}
+                        className="hover:bg-blue-100 rounded p-2 transition"
+                      >
+                        <Link
+                          href={`/playlist/${playlist.id}`}
+                          className="flex items-center space-x-4 w-full cursor-pointer"
+                        >
+                          {playlist.image ? (
+                            <img
+                              src={playlist.image}
+                              alt={playlist.name}
+                              className="w-12 h-12 rounded-lg object-cover border border-gray-300"
+                            />
+                          ) : (
+                            <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-xl">
+                              🎵
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-semibold text-gray-900">{playlist.name}</div>
+                            {playlist.description && (
+                              <div className="text-sm text-gray-500">{playlist.description}</div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        )}
-        {/* Main content */}
-        <div className="flex-1 mx-4 overflow-y-auto h-full">
-          <div className="flex items-center justify-center">
-            <h1 className="text-2xl font-bold">New Release Song</h1>
-            {!isUserLoggedIn && (
-              <p className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2" onClick={signInWithSpotify}>
-                *sign in to create playlist
-              </p>
-            )}
-          </div>
-          <div className="mt-4 mb-5">
-            <input
-              type="text"
-              placeholder="Search songs by title..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full p-2 border border-gray-300 rounded mb-4"
-            />
-            <SongList
-              onAddToPlaylist={openAddToPlaylistModal}
-              searchQuery={searchQuery}
-            />
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+
+            {/* Kanan: Songlist */}
+            <div className="w-full lg:w-3/4 mt-6 lg:mt-0">
+              <div className="flex-1 mx-4 overflow-y-auto h-full">
+                <div className="flex items-center justify-center">
+                  <h1 className="text-2xl font-bold">New Release Song</h1>
+                  {!isUserLoggedIn && (
+                    <p
+                      className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2"
+                      onClick={signInWithSpotify}
+                    >
+                      *sign in to create playlist
+                    </p>
+                  )}
+                </div>
+                <div className="mt-4 mb-5">
+                  <input
+                    type="text"
+                    placeholder="Search songs by title..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded mb-4"
+                  />
+                  <SongList
+                    onAddToPlaylist={openAddToPlaylistModal}
+                    searchQuery={searchQuery}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        {/* Now Playing Sidebar */}
-        {isUserLoggedIn && (
-           <div className="sticky top-20">
-            <NowPlaying />
+
+        {/* KANAN  */}
+        <div className="hidden md:block w-full md:w-1/3 lg:w-1/4 bg-transparent pt-6 pr-6 overflow-y-auto">
+          <div className="sticky top-0 bg-transparent z-10">
+            {isUserLoggedIn && (
+              <NowPlaying isPlaying={isPlaying} />
+            )}
           </div>
-        )}
+        </div>
       </div>
+    ) : (
+      // Halaman untuk user yang belum login
+      <div
+        className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
+        style={{ backgroundImage: "url('/headphone.jpg')" }}
+      >
+        <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
+        <p className="text-lg italic font-normal text-[#ECF0F1]">
+          Keep up with your favorite songs through Mocktify
+        </p>
+      </div>
+    )}
 
-      {isUserLoggedIn && (
-       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg border-t border-gray-200 py-2 px-4 z-50">
-          <TestPlaying />
-        </div>
-      )}
+    {isUserLoggedIn && (
+      <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg border-t border-gray-200 py-2 px-4 z-50">
+        <TestPlaying setIsPlaying={setIsPlaying} />
+      </div>
+    )}
+  </>
+);
 
-      <AddPlaylistModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onCreate={(playlist) => {
-          if (userId) {
-            handleCreatePlaylist({ ...playlist, user_id: userId });
-          } else {
-            console.warn("User ID not found. Cannot create playlist.");
-          }
-        }}
-      />
-      <AddToPlaylistModal
-        isOpen={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        playlists={playlists}
-        onAdd={handleAddToPlaylist}
-      />
-    </>
-  );
-}
+
+  }

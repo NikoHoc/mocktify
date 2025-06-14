@@ -27,11 +27,10 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body
-				style={{ backgroundColor: "#ECF0F1" }}
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<UserNavbar />
-				<div className="pt-16">
+				<div className="py-12">
 					{children}
 				</div>
 				<UserFooter />
