@@ -270,6 +270,24 @@ return (
         <TestPlaying setIsPlaying={setIsPlaying} />
       </div>
     )}
+
+    <AddPlaylistModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onCreate={(playlist) => {
+          if (userId) {
+            handleCreatePlaylist({ ...playlist, user_id: userId });
+          } else {
+            console.warn("User ID not found. Cannot create playlist.");
+          }
+        }}
+      />
+      <AddToPlaylistModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        playlists={playlists}
+        onAdd={handleAddToPlaylist}
+      />
   </>
 );
 
