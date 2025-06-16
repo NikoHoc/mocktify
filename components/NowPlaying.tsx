@@ -16,7 +16,7 @@ const NowPlaying: React.FC<NowPlayingProps> = ({ isPlaying }) => {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto rounded-lg p-4 shadow-lg border bg-[#C8D9E6]/40 border-[#F5EFEB] backdrop-blur-md shadow-md flex flex-col items-center">
+    <div className="w-full max-w-md mx-auto rounded-lg p-4 shadow-lg border bg-[#C8D9E6]/40 border-[#F5EFEB] backdrop-blur-md flex flex-col items-center">
       <h2 className="text-2xl font-bold mb-4 text-gray-800">Now Playing</h2>
       <div className="relative aspect-square w-32 sm:w-40 md:w-52 lg:w-60 xl:w-72 mb-4">
         <div

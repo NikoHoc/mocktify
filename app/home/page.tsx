@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import SongList from "@/components/SongList";
+import SongGuest from "@/components/SongGuest";
 import AddPlaylistModal from "@/components/AddPlaylistModal";
 import NowPlaying from "@/components/NowPlaying";
 import { supabase } from "../lib/supabaseClient";
@@ -216,14 +217,7 @@ return (
               <div className="flex-1 mx-4 overflow-y-auto h-full">
                 <div className="flex items-center justify-center">
                   <h1 className="text-2xl font-bold">New Release Song</h1>
-                  {!isUserLoggedIn && (
-                    <p
-                      className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2"
-                      onClick={signInWithSpotify}
-                    >
-                      *sign in to create playlist
-                    </p>
-                  )}
+                  
                 </div>
                 <div className="mt-4 mb-5">
                   <input
@@ -254,15 +248,29 @@ return (
       </div>
     ) : (
       // Halaman untuk user yang belum login
-      <div
-        className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
-        style={{ backgroundImage: "url('/headphone.jpg')" }}
-      >
-        <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
-        <p className="text-lg italic font-normal text-[#ECF0F1]">
-          Keep up with your favorite songs through Mocktify
-        </p>
-      </div>
+      <section>
+        <div
+          className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
+          style={{ backgroundImage: "url('/headphone.jpg')" }}
+        >
+          <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
+          <p className="text-lg italic font-normal text-[#ECF0F1]">
+            Keep up with your favorite songs through Mocktify
+          </p>
+          
+        </div>
+        <div className="m-5">
+          <div className="justify-center flex text-center mb-5">
+            <h1 className="text-2xl font-bold">New Release Song</h1>
+            <p className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2" onClick={signInWithSpotify}>
+            *sign in to create playlist
+            </p>
+          </div>
+          <SongGuest/>
+        </div>
+      </section>
+      
+      
     )}
 
     {isUserLoggedIn && (
