@@ -2,15 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import SongList from "@/components/SongList";
+import SongGuest from "@/components/SongGuest";
 import AddPlaylistModal from "@/components/AddPlaylistModal";
 import NowPlaying from "@/components/NowPlaying";
 import { supabase } from "../lib/supabaseClient";
 import Link from "next/link";
-import TestPlaying from "@/components/TestPlaying";
+import SongPlayer from "@/components/SongPlayer";
 import AddToPlaylistModal from "@/components/AddToPlaylistModal";
 import { signInWithSpotify } from "../lib/auth";
 import getSpotifyProfile from "../lib/spotifyProfile";
 import MainSlideShow from "@/components/MainSlideShow";
+import { Spinner } from "flowbite-react";
 
 interface Playlist {
   id: string;
@@ -30,6 +32,8 @@ export default function Home() {
   const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentSong, setCurrentSong] = useState<any | null>(null);
+  const [playTrigger, setPlayTrigger] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -69,7 +73,8 @@ export default function Home() {
 
   console.log(spotifyProfile)
   if (isUserLoggedIn && (loading || !spotifyProfile)) {
-    return <div className="mt-4">Loading your profile...</div>;
+    return <div className="justify-center justify-items-center flex">
+      <Spinner aria-label="Large spinner example" size="lg"/></div>;
   }
   
   const handleCreatePlaylist = async (playlist: {
@@ -216,14 +221,7 @@ return (
               <div className="flex-1 mx-4 overflow-y-auto h-full">
                 <div className="flex items-center justify-center">
                   <h1 className="text-2xl font-bold">New Release Song</h1>
-                  {!isUserLoggedIn && (
-                    <p
-                      className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2"
-                      onClick={signInWithSpotify}
-                    >
-                      *sign in to create playlist
-                    </p>
-                  )}
+                  
                 </div>
                 <div className="mt-4 mb-5">
                   <input
@@ -236,6 +234,15 @@ return (
                   <SongList
                     onAddToPlaylist={openAddToPlaylistModal}
                     searchQuery={searchQuery}
+                    onPlaySong={(song) => {
+                      setCurrentSong({
+                        title: song.name,
+                        artist: song.artists[0].name,
+                        images: song.images,
+                        uri: song.uri,
+                      });
+                      setPlayTrigger(true);
+                    }}
                   />
                 </div>
               </div>
@@ -247,27 +254,46 @@ return (
         <div className="hidden md:block w-full md:w-1/3 lg:w-1/4 bg-transparent pt-6 pr-6 overflow-y-auto">
           <div className="sticky top-0 bg-transparent z-10">
             {isUserLoggedIn && (
-              <NowPlaying isPlaying={isPlaying} />
+              <NowPlaying isPlaying={isPlaying} song={currentSong} />
             )}
           </div>
         </div>
       </div>
     ) : (
       // Halaman untuk user yang belum login
-      <div
-        className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
-        style={{ backgroundImage: "url('/headphone.jpg')" }}
-      >
-        <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
-        <p className="text-lg italic font-normal text-[#ECF0F1]">
-          Keep up with your favorite songs through Mocktify
-        </p>
-      </div>
+      <section>
+        <div
+          className="w-full h-120 bg-cover bg-center text-white flex flex-col items-center justify-center text-center px-4"
+          style={{ backgroundImage: "url('/headphone.jpg')" }}
+        >
+          <h1 className="text-4xl font-bold italic text-[#ECF0F1]">MOCKTIFY</h1>
+          <p className="text-lg italic font-normal text-[#ECF0F1]">
+            Keep up with your favorite songs through Mocktify
+          </p>
+          
+        </div>
+        <div className="m-5">
+          <div className="justify-center flex text-center mb-5">
+            <h1 className="text-2xl font-bold">New Release Song</h1>
+            <p className="cursor-pointer text-sm italic font-thin hover:text-blue-500 mt-3 ms-2" onClick={signInWithSpotify}>
+            *sign in to create playlist
+            </p>
+          </div>
+          <SongGuest/>
+        </div>
+      </section>
+      
+      
     )}
 
     {isUserLoggedIn && (
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg border-t border-gray-200 py-2 px-4 z-50">
-        <TestPlaying setIsPlaying={setIsPlaying} />
+        <SongPlayer
+          setIsPlaying={setIsPlaying}
+          uri={currentSong?.uri}
+          playTrigger={playTrigger}
+          setPlayTrigger={setPlayTrigger}
+        />
       </div>
     )}
 

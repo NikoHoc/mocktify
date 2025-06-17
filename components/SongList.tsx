@@ -5,9 +5,10 @@ import { useEffect, useState, useRef } from "react";
 interface SongListProps {
   onAddToPlaylist: (songId: string) => void;
   searchQuery?: string;
+  onPlaySong: (song: any) => void;
 }
 
-const SongList = ({ onAddToPlaylist, searchQuery }: SongListProps) => {
+const SongList = ({ onAddToPlaylist, searchQuery, onPlaySong }: SongListProps) => {
   const [songs, setSongs] = useState<any[]>([]);
   const [overflowingArtists, setOverflowingArtists] = useState<Record<string, boolean>>({});
 
@@ -60,6 +61,17 @@ const SongList = ({ onAddToPlaylist, searchQuery }: SongListProps) => {
               {song.name}
             </h2>
             <div className="flex-grow" />
+
+            <div onClick={(e) => {
+                e.preventDefault();
+                onPlaySong(song);
+              }} className="justify-items-end ">
+              <svg xmlns="http://www.w3.org/2000/svg" width="35" height="35" viewBox="0 0 24 24" className="text-green-400">
+                <path fill="currentColor" d="m10.65 15.75l4.875-3.125q.35-.225.35-.625t-.35-.625L10.65 8.25q-.375-.25-.763-.038t-.387.663v6.25q0 .45.388.663t.762-.038M12 22q-2.075 0-3.9-.788t-3.175-2.137T2.788 15.9T2 12t.788-3.9t2.137-3.175T8.1 2.788T12 2t3.9.788t3.175 2.137T21.213 8.1T22 12t-.788 3.9t-2.137 3.175t-3.175 2.138T12 22" />
+              </svg>
+            </div>
+           
+            
             <div className="flex items-center mt-auto pt-2 border-t border-gray-200 dark:border-gray-700">
               <div className="group w-2/3 overflow-hidden">
                 <p
