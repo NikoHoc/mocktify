@@ -7,11 +7,12 @@ import AddPlaylistModal from "@/components/AddPlaylistModal";
 import NowPlaying from "@/components/NowPlaying";
 import { supabase } from "../lib/supabaseClient";
 import Link from "next/link";
-import TestPlaying from "@/components/TestPlaying";
+import SongPlayer from "@/components/SongPlayer";
 import AddToPlaylistModal from "@/components/AddToPlaylistModal";
 import { signInWithSpotify } from "../lib/auth";
 import getSpotifyProfile from "../lib/spotifyProfile";
 import MainSlideShow from "@/components/MainSlideShow";
+import { Spinner } from "flowbite-react";
 
 interface Playlist {
   id: string;
@@ -31,6 +32,8 @@ export default function Home() {
   const [selectedSongId, setSelectedSongId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isPlaying, setIsPlaying] = useState(false);
+  const [currentSong, setCurrentSong] = useState<any | null>(null);
+  const [playTrigger, setPlayTrigger] = useState(false);
 
   useEffect(() => {
     const getSession = async () => {
@@ -70,7 +73,8 @@ export default function Home() {
 
   console.log(spotifyProfile)
   if (isUserLoggedIn && (loading || !spotifyProfile)) {
-    return <div className="mt-4">Loading your profile...</div>;
+    return <div className="justify-center justify-items-center flex">
+      <Spinner aria-label="Large spinner example" size="lg"/></div>;
   }
   
   const handleCreatePlaylist = async (playlist: {
@@ -230,6 +234,15 @@ return (
                   <SongList
                     onAddToPlaylist={openAddToPlaylistModal}
                     searchQuery={searchQuery}
+                    onPlaySong={(song) => {
+                      setCurrentSong({
+                        title: song.name,
+                        artist: song.artists[0].name,
+                        images: song.images,
+                        uri: song.uri,
+                      });
+                      setPlayTrigger(true);
+                    }}
                   />
                 </div>
               </div>
@@ -241,7 +254,7 @@ return (
         <div className="hidden md:block w-full md:w-1/3 lg:w-1/4 bg-transparent pt-6 pr-6 overflow-y-auto">
           <div className="sticky top-0 bg-transparent z-10">
             {isUserLoggedIn && (
-              <NowPlaying isPlaying={isPlaying} />
+              <NowPlaying isPlaying={isPlaying} song={currentSong} />
             )}
           </div>
         </div>
@@ -275,7 +288,12 @@ return (
 
     {isUserLoggedIn && (
       <div className="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-md shadow-lg border-t border-gray-200 py-2 px-4 z-50">
-        <TestPlaying setIsPlaying={setIsPlaying} />
+        <SongPlayer
+          setIsPlaying={setIsPlaying}
+          uri={currentSong?.uri}
+          playTrigger={playTrigger}
+          setPlayTrigger={setPlayTrigger}
+        />
       </div>
     )}
 

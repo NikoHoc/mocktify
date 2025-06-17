@@ -2,18 +2,31 @@ import React from "react";
 
 interface NowPlayingProps {
   isPlaying: boolean;
+  song?: {
+    title: string;
+    artist: string;
+    images: { url: string }[];
+  };
 }
 
-const NowPlaying: React.FC<NowPlayingProps> = ({ isPlaying }) => {
-  const song = {
-    title: "Sample Song",
-    artist: "Sample Artist",
-    images: [
-      {
-        url: "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
-      },
-    ],
-  };
+const NowPlaying: React.FC<NowPlayingProps> = ({ isPlaying, song }) => {
+  // const song = {
+  //   title: "Sample Song",
+  //   artist: "Sample Artist",
+  //   images: [
+  //     {
+  //       url: "https://i.scdn.co/image/ab67616d00001e02ff9ca10b55ce82ae553c8228",
+  //     },
+  //   ],
+  // };
+  if (!song) {
+    return (
+      <div className="w-full max-w-md mx-auto rounded-lg p-4 shadow-lg border bg-[#C8D9E6]/40 border-[#F5EFEB] backdrop-blur-md flex flex-col items-center">
+        <h2 className="text-2xl font-bold mb-4 text-gray-800">Now Playing</h2>
+        <div className="text-gray-500">No song selected</div>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto rounded-lg p-4 shadow-lg border bg-[#C8D9E6]/40 border-[#F5EFEB] backdrop-blur-md flex flex-col items-center">
@@ -30,7 +43,7 @@ const NowPlaying: React.FC<NowPlayingProps> = ({ isPlaying }) => {
             className="w-full h-full rounded-full object-cover"
           />
           <img
-            src={song.images[0].url}
+            src={song.images?.[0]?.url || "/fallback.jpg"}
             alt="Album Art"
             className="absolute top-1/2 left-1/2 w-14 h-14 sm:w-16 sm:h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 rounded-full object-cover transform -translate-x-1/2 -translate-y-1/2 border-2 border-white shadow-md"
           />
