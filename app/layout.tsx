@@ -30,7 +30,7 @@ export default function RootLayout({
 				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
 			>
 				<UserNavbar />
-				<div className="py-12">
+				<div className="h-flex">
 					{children}
 				</div>
 				<UserFooter />
