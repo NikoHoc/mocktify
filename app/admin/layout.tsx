@@ -2,20 +2,40 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-
-// Skip layout for login page
-const publicRoutes = ['/admin/login'];
-
+import { signOut } from "../lib/auth";
 import { PropsWithChildren } from 'react';
+import { supabase } from '../lib/supabaseClient';
+import { useEffect, useState } from 'react';
+
+const publicRoutes = ['/sign-in'];
 
 export default function AdminLayout({ children }: PropsWithChildren<{}>) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
   
-  // For login page, render without admin layout
-  if (publicRoutes.includes(pathname)) {
-    return children;
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user && !publicRoutes.includes(pathname)) {
+        router.push('/sign-in');
+      } else {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [pathname, router]);
+
+  if (loading) {
+    return (
+      <div className="bg-gray-900 text-white flex items-center justify-center h-screen">
+        <p className="text-xl">Checking Session</p>
+      </div>
+    );
   }
-  
+
   return (
     <div className="flex h-screen text-white">
       {/* Sidebar */}
@@ -39,7 +59,7 @@ export default function AdminLayout({ children }: PropsWithChildren<{}>) {
         </div>
         
         <div className="absolute bottom-0 w-64 p-4">
-          <button className="flex items-center text-gray-400 hover:text-white w-full px-3 py-2">    
+          <button onClick={() => signOut(router)} className="flex items-center text-gray-400 hover:text-white hover:bg-red-500 transition ease-in rounded-lg w-full px-3 py-2">    
             <span>Log out</span>
           </button>
         </div>
@@ -56,6 +76,7 @@ export default function AdminLayout({ children }: PropsWithChildren<{}>) {
 }
 
 import { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 
 type NavLinkProps = {
   href: string;

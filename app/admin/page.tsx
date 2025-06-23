@@ -2,19 +2,28 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { supabase } from '../lib/supabaseClient';
 
 export default function AdminRedirect() {
   const router = useRouter();
-  
+
   useEffect(() => {
-    // In a real implementation, you would check auth status here
-    // For now, just redirect to login
-    router.push('/admin/login');
-  }, []);
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        router.push('/sign-in');
+      } else {
+        router.push('/admin/dashboard');
+      }
+    };
+
+    checkAuth();
+  }, [router]);
   
   return (
-    <div className="flex items-center justify-center h-screen">
-      <p className="text-xl">Redirecting...</p>
+    <div className="bg-gray-900 text-white flex items-center justify-center h-screen">
+      <p className="text-xl">Checking Session</p>
     </div>
   );
 }
