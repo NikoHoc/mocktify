@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import PlaylistTable from "@/components/PlaylistTable";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabaseClient";
-import { Spinner } from "flowbite-react";
+import { Spinner, Button } from "flowbite-react";
 
 interface Playlist {
   id: string;
@@ -176,7 +176,13 @@ export default function Playlist() {
   }
 
   return (
-    <div className="container mx-auto px-4 pt-24 pb-8">
+    <div className="container mx-auto px-4 pt-10 pb-8">
+      <div className="flex justify-between mb-3">
+        <h1 className="text-3xl font-bold">My Playlist</h1>
+        <Button onClick={() => router.push("/home")} className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white hover:bg-gradient-to-br focus:ring-blue-300 dark:focus:ring-blue-800">
+          Back
+        </Button>
+      </div>
       <div className="bg-gradient-to-b from-[#567C8D] to-gray-900 p-8 rounded-lg mb-8 text-white">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Playlist Image */}

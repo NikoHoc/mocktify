@@ -48,7 +48,10 @@ const SongList = ({ onAddToPlaylist, searchQuery, onPlaySong }: SongListProps) =
       {filteredSongs.map((song) => (
         <Link
           key={song.id}
-          href={`/review/${song.id}`}
+          href={{
+            pathname: `/review/${song.id}`,
+            query: { data: encodeURIComponent(JSON.stringify(song)) }
+          }}
           className="max-w-sm w-full cursor-pointer no-underline"
         >
           <Card className="flex flex-col h-full p-2">

@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { supabase } from "@/app/lib/supabaseClient";
+import { useSearchParams } from "next/navigation";
+import { Button } from "flowbite-react";
+import { useRouter } from "next/navigation";
 
 interface Review {
   id: string;
@@ -93,6 +96,13 @@ export default function ReviewPage({ params }: ReviewPageProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [hasReviewed, setHasReviewed] = useState(false);
 
+  const searchParams = useSearchParams();
+  const encodedData = searchParams.get("data");
+
+  const song = encodedData ? JSON.parse(decodeURIComponent(encodedData)) : null;
+
+  const router = useRouter();
+
   useEffect(() => {
     const fetchUserAndReviews = async () => {
       try {
@@ -142,6 +152,21 @@ export default function ReviewPage({ params }: ReviewPageProps) {
 
   return (
     <div className="max-w-3xl mx-auto p-4">
+      <div className="flex justify-between pt-5 pb-3">
+        <h1 className="text-3xl font-bold">Song</h1>
+        <Button onClick={() => router.push("/home")} className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white hover:bg-gradient-to-br focus:ring-blue-300 dark:focus:ring-blue-800">
+          Back
+        </Button>
+      </div>
+      
+      {song && (
+        <div className="mb-6 border-0 p-4 rounded-lg shadow-xl bg-white">
+          <h2 className="text-xl font-bold mb-2">{song.name}</h2>
+          <img src={song.images[0].url} alt={song.name} className="w-full max-w-sm rounded mb-2" />
+          <p className="text-gray-700">Artists: {song.artists.map((a: any) => a.name).join(", ")}</p>
+          <p className="text-gray-500 text-sm">Released: {song.release_date}</p>
+        </div>
+      )}
       <h1 className="text-3xl font-bold mb-4">Reviews</h1>
       {hasReviewed ? (
         <p className="mb-6 text-green-600">You have already reviewed this song.</p>

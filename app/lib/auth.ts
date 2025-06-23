@@ -25,7 +25,7 @@ export async function signOut(router: ReturnType<typeof useRouter>) {
     throw error;
   }
   
-  router.push("/sign-in");
+  router.push("/");
 
   //window.location.reload();
 }
