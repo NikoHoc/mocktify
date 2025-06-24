@@ -2,7 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { signOut } from "../lib/auth";
+import { adminSignOut } from "../lib/auth";
 import { PropsWithChildren } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { useEffect, useState } from 'react';
@@ -59,7 +59,7 @@ export default function AdminLayout({ children }: PropsWithChildren<{}>) {
         </div>
         
         <div className="absolute bottom-0 w-64 p-4">
-          <button onClick={() => signOut(router)} className="flex items-center text-gray-400 hover:text-white hover:bg-red-500 transition ease-in rounded-lg w-full px-3 py-2">    
+          <button onClick={() => adminSignOut(router)} className="flex items-center text-gray-400 hover:text-white hover:bg-red-500 transition ease-in rounded-lg w-full px-3 py-2">    
             <span>Log out</span>
           </button>
         </div>

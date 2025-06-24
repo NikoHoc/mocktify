@@ -71,7 +71,7 @@ export default function Login() {
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-      
+        
         {errorMsg && <p className="mt-4 text-red-500 text-center">{errorMsg}</p>}
       </div>
     </div>
