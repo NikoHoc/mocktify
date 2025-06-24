@@ -172,8 +172,9 @@ const PlaylistTable = ({ playlistId }: PlaylistTableProps) => {
               </td>
               <td className="py-3 px-4 text-right">
                 <Button
+                  color="red"
                   onClick={() => handleDelete(song.id)}
-                  className="text-gray-600 hover:text-red-500 transition-colors"
+                  size="sm"
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
