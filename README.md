@@ -1,7 +1,8 @@
 # Mocktify
 
 ### About Mocktify
-A website build with Next Js, using Tailwind CSS and Flowbite React. Utilize Supabase for the database. Let you keep track of your favorite song and make your own playlist just like spotify :)
+A website build with Next Js, using Tailwind CSS and Flowbite React. Utilize Supabase for the database, and spotify web API. Let you keep track of your favorite song and make your own playlist just like spotify :)
+[Spotify Web API](https://developer.spotify.com/documentation/web-api)
 
 ### Setup Project
 ```
