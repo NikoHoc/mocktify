@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import PlaylistTable from "@/components/PlaylistTable";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "@/app/lib/supabaseClient";
-import { Spinner } from "flowbite-react";
+import { Spinner, Button } from "flowbite-react";
 
 interface Playlist {
   id: string;
@@ -26,7 +26,7 @@ export default function Playlist() {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
-  const [backgroundColor, setBackgroundColor] = useState("from-[#567C8D] to-gray-900");
+  // Removed unused setBackgroundColor state to fix eslint warning
   const [showMenu, setShowMenu] = useState(false);
 
   // Fetch playlist data from supabase
@@ -130,34 +130,29 @@ export default function Playlist() {
     if (!e.target.files || !e.target.files[0] || !playlist) return;
 
     const file = e.target.files[0];
-    const fileExt = file.name.split(".").pop();
-    const fileName = `${playlistId}-${Date.now()}.${fileExt}`;
-    const filePath = `playlist-covers/${fileName}`;
+    const formData = new FormData();
+    formData.append('image', file);
 
     try {
-      // Upload image to Supabase Storage
-      const { error: uploadError } = await supabase.storage.from("images").upload(filePath, file);
-
-      if (uploadError) throw uploadError;
-
-      // Get public URL
-      const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-
-      // Update playlist with new image URL
-      const { error: updateError } = await supabase
-        .from("playlist")
-        .update({ image: data.publicUrl })
-        .eq("id", playlistId);
-
-      if (updateError) throw updateError;
-
-      // Update local state
-      setPlaylist({
-        ...playlist,
-        image: data.publicUrl,
+      const response = await fetch(`/api/playlists/${playlistId}`, {
+        method: 'PATCH',
+        body: formData,
       });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload image');
+      }
+
+      const result = await response.json();
+
+      if (result.playlist && result.playlist.image) {
+        setPlaylist({
+          ...playlist,
+          image: result.playlist.image,
+        });
+      }
     } catch (err) {
-      console.error("Error uploading image:", err);
+      console.error('Error uploading image:', err);
     }
   };
 
@@ -181,8 +176,14 @@ export default function Playlist() {
   }
 
   return (
-    <div className="container mx-auto px-4 pt-24 pb-8">
-      <div className={`bg-gradient-to-b ${backgroundColor} p-8 rounded-lg mb-8 text-white`}>
+    <div className="container mx-auto px-4 pt-10 pb-8">
+      <div className="flex justify-between mb-3">
+        <h1 className="text-3xl font-bold">My Playlist</h1>
+        <Button onClick={() => router.push("/home")} className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 text-white hover:bg-gradient-to-br focus:ring-blue-300 dark:focus:ring-blue-800">
+          Back
+        </Button>
+      </div>
+      <div className="bg-gradient-to-b from-[#567C8D] to-gray-900 p-8 rounded-lg mb-8 text-white">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Playlist Image */}
           <div className="relative w-48 h-48 flex-shrink-0 bg-gray-700 rounded-md shadow-lg">

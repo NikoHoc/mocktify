@@ -26,6 +26,14 @@ export async function signOut(router: ReturnType<typeof useRouter>) {
   }
   
   router.push("/");
+}
 
-  window.location.reload();
+export async function adminSignOut(router: ReturnType<typeof useRouter>) {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error("Spotify logout failed:", error.message);
+    throw error;
+  }
+  
+  router.push("/sign-in");
 }
