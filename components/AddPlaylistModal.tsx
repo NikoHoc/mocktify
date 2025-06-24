@@ -26,9 +26,9 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({ isOpen, onClose, on
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-96 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-xl font-semibold mb-4">Add New Playlist</h2>
+    <div className="fixed inset-0 bg-[#C8D9E6] bg-opacity-80 flex items-center justify-center z-50">
+      <div className="bg-[#F5EFEB]/80 backdrop-blur-md shadow-2xl p-6 w-96 max-h-[90vh] overflow-y-auto rounded-2xl border border-white/20">
+        <h2 className="text-xl font-semibold mb-4 text-[#2F4156]">Add New Playlist</h2>
         <form onSubmit={handleSubmit}>
           <label className="block mb-2 font-medium text-gray-700" htmlFor="playlistName">
             Playlist Name
@@ -98,7 +98,7 @@ const AddPlaylistModal: React.FC<AddPlaylistModalProps> = ({ isOpen, onClose, on
             </button>
             <button
               type="submit"
-              className="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700"
+              className="px-4 py-2 rounded bg-[#C8D9E6] hover:bg-[#567C8D] text-[#2F4156] hover:text-[#F5EFEB] cursor-pointer transition"
             >
               Create
             </button>
