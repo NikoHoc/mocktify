@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
-//masih dummy blm ambil data
 interface Artist {
   id: string;
   name: string;
@@ -29,13 +28,13 @@ const MainSlideShow: React.FC = () => {
           {
             id: "2",
             name: "The Weeknd",
-            images: [{ url: "/weeknd.jpg", width: 640, height: 640 }],
+            images: [{ url: "/weeknd.png", width: 640, height: 640 }],
             genres: ["R&B", "Pop"]
           },
           {
             id: "3",
             name: "Adele",
-            images: [{ url: "/adele.jpg", width: 640, height: 640 }],
+            images: [{ url: "/adele.png", width: 640, height: 640 }],
             genres: ["Soul", "Pop"]
           }
         ];
@@ -43,7 +42,7 @@ const MainSlideShow: React.FC = () => {
         await new Promise((res) => setTimeout(res, 500));
         setArtists(dummyArtists);
       } catch (error) {
-        console.error("Failed to fecth data", error);
+        console.error("Failed to fetch data", error);
       } finally {
         setLoading(false);
       }
@@ -77,6 +76,7 @@ const MainSlideShow: React.FC = () => {
       </div>
     );
   }
+
   const extendedSlides = [
     artists[artists.length - 1],
     ...artists,
@@ -97,25 +97,27 @@ const MainSlideShow: React.FC = () => {
         onTransitionEnd={handleTransitionEnd}
       >
         {extendedSlides.map((artist, index) => {
-          const artistImage = artist.images?.[0]?.url || "/placeholder-artist.png";
-          const mainGenre = artist.genres?.[0] || "Various";
+          const artistImage = artist.images?.[0]?.url;
+          const mainGenre = artist.genres?.[0];
 
           return (
             <div
               key={index}
-              className="w-full flex-shrink-0 h-80 relative text-white flex items-center justify-center"
+              className="relative h-80 w-full flex-shrink-0 text-white"
               style={{ width: `${100 / extendedSlides.length}%` }}
             >
-              <Image
-                src={artistImage}
-                alt={`Foto ${artist.name}`}
-                fill
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-black bg-opacity-60" />
-              <div className="absolute bottom-4 left-4 z-10 bg-black bg-opacity-50 p-4 rounded-md">
-                <h1 className="text-xl md:text-2xl font-bold italic">{artist.name}</h1>
-                <p className="text-sm md:text-base">{mainGenre}</p>
+              <div className="relative w-full h-full">
+                <Image
+                  src={artistImage}
+                  alt={`Foto ${artist.name}`}
+                  fill
+                  className="object-cover"
+                />
+                <div className="absolute inset-0 bg-black bg-opacity-60" />
+                <div className="absolute bottom-4 left-4 z-10 bg-black bg-opacity-50 p-4 rounded-md">
+                  <h1 className="text-xl md:text-2xl font-bold italic">{artist.name}</h1>
+                  <p className="text-sm md:text-base">{mainGenre}</p>
+                </div>
               </div>
             </div>
           );
